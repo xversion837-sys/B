@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <title>App Download</title>
+  <style>
+    :root{
+      --primary:#0044cc;
+      --divider:#e6e6e6;
+      --muted:#666;
+      --nav:64px;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      min-height:100%;
+      background:#f4f4f4;
+      color:#111;
+      font-family:system-ui,-apple-system,sans-serif;
+      -webkit-text-size-adjust:100%;
+      overflow-x:hidden;
+    }
+    body{
+      min-height:100dvh;
+      padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    .page{
+      width:100%;
+      max-width:430px;
+      min-height:100dvh;
+      margin:0 auto;
+      background:#f9f9f9;
+      padding-bottom:calc(var(--nav) + 12px + env(safe-area-inset-bottom));
+      position:relative;
+    }
+    .hero{
+      padding:28px 16px 22px;
+      text-align:center;
+      background:#fff;
+      border-bottom:1px solid var(--divider);
+    }
+    .title h1{
+      margin:0;
+      font-size:clamp(22px, 6vw, 26px);
+      color:#222;
+      line-height:1.25;
+      word-break:break-word;
+    }
+    .title h1:empty{display:none}
+    .subtitle{
+      font-size:14px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+    .metrics{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    .metrics .badge{
+      background:#eee;
+      padding:4px 10px;
+      border-radius:8px;
+      font-size:12px;
+    }
+    .primary-cta{
+      display:inline-block;
+      margin:18px auto 0;
+      padding:14px 28px;
+      background:var(--primary);
+      color:#fff;
+      font-weight:bold;
+      text-decoration:none;
+      border-radius:25px;
+      font-size:16px;
+      box-shadow:0 3px 8px rgba(0,0,0,.2);
+      cursor:pointer;
+    }
+    section{margin:12px 16px}
+    .card{
+      background:#fff;
+      padding:18px;
+      border-radius:14px;
+      box-shadow:0 2px 8px rgba(0,0,0,.06);
+    }
+    .sec-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .sec-head h2{margin:0;font-size:17px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .chip{
+      background:#f0f0f0;
+      padding:6px 12px;
+      border-radius:20px;
+      font-size:13px;
+    }
+    .safety .srow{
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      margin-top:8px;
+    }
+    .safety .srow p{margin:0;line-height:1.45}
+    .safety .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--primary);
+      margin-top:6px;
+      flex:0 0 auto;
+    }
+    .muted{color:var(--muted)}
+    .tiny{font-size:12px}
+    .nav{
+      position:fixed;
+      left:50%;
+      bottom:0;
+      transform:translateX(-50%);
+      width:100%;
+      max-width:430px;
+      background:#fff;
+      border-top:1px solid var(--divider);
+      box-shadow:0 -1px 6px rgba(0,0,0,.05);
+      padding-bottom:env(safe-area-inset-bottom);
+      z-index:10;
+    }
+    .nav ul{
+      margin:0;
+      display:flex;
+      list-style:none;
+      padding:8px 8px 10px;
+      justify-content:space-around;
+      color:var(--muted);
+    }
+    .nav li{
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      gap:2px;
+      min-width:60px;
+    }
+    .nav .i{font-size:18px;line-height:1}
+
+    @media (max-width:360px){
+      .hero{padding:22px 12px 18px}
+      section{margin:10px 12px}
+      .card{padding:14px}
+      .sec-head h2{font-size:16px}
+      .primary-cta{width:100%;padding:14px 20px;font-size:15px}
+      .nav li{font-size:10px;min-width:48px}
+      .nav .i{font-size:16px}
+      .metrics{gap:6px}
+      .metrics .badge{font-size:11px;padding:3px 8px}
+    }
+
+    @media (min-width:481px){
+      body{
+        display:flex;
+        justify-content:center;
+        align-items:flex-start;
+        padding:max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      }
+      .page{
+        min-height:calc(100dvh - 32px);
+        max-height:920px;
+        border-radius:24px;
+        box-shadow:0 12px 48px rgba(0,0,0,.14);
+        overflow:hidden;
+      }
+      .nav{
+        border-radius:0 0 24px 24px;
+      }
+    }
+
+    @media (min-width:768px){
+      body{padding:24px}
+      .page{min-height:min(920px,calc(100dvh - 48px))}
+    }
+
+    @media (max-height:500px) and (orientation:landscape){
+      .hero{padding:16px 16px 14px}
+      .primary-cta{margin-top:12px;padding:12px 24px}
+      section{margin:8px 16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div class="title">
+        <h1 id="appName"></h1>
+        <div class="subtitle">Fast, safe, and easy to install</div>
+      </div>
+      <div class="metrics">
+        <div><span class="star">★</span> <strong>4.8</strong> <span class="muted tiny">16K+ reviews</span></div>
+        <div class="badge">50k+ Downloads</div>
+        <div class="badge">Rated for 4+</div>
+      </div>
+      <a class="primary-cta" id="installBtn">Install Now</a>
+    </div>
+
+    <section>
+      <div class="card">
+        <div class="sec-head">
+          <h2>About this app</h2>
+          <div class="arrow">➔</div>
+        </div>
+        <p class="muted" id="aboutText">Download the latest version of the app.</p>
+        <div class="chips">
+          <span class="chip">Fast Download</span>
+          <span class="chip">Secure</span>
+          <span class="chip">Free</span>
+          <span class="chip">Easy Install</span>
+          <span class="chip">Latest Version</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <div class="sec-head">
+          <h2>Data safety</h2>
+          <div class="arrow">➔</div>
+        </div>
+        <div class="safety">
+          <div class="srow">
+            <div class="dot"></div>
+            <p>Your personal data is encrypted and never shared without consent.</p>
+          </div>
+          <div class="srow">
+            <div class="dot"></div>
+            <p>This app follows safe download and privacy best practices.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="nav">
+    <ul>
+      <li><div class="i">🏠</div>Home</li>
+      <li><div class="i">📱</div>Apps</li>
+      <li><div class="i">⬇️</div>Download</li>
+      <li><div class="i">ℹ️</div>About</li>
+    </ul>
+  </nav>
+
+  <script>
+  const site = window.__SITE__ || {};
+  let fileUrl = (site.download || "").trim();
+
+  if (site.name) {
+    document.getElementById("appName").textContent = site.name;
+    document.title = site.name;
+    document.getElementById("aboutText").textContent =
+      "Download the latest version of " + site.name + ". Safe, fast, and always up to date.";
+  }
+
+  document.getElementById("installBtn").addEventListener("click", () => {
+    if (!fileUrl) {
+      alert("Download link is not set yet.");
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = "app-install.apk";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    const btn = document.getElementById("installBtn");
+    btn.textContent = "Downloading...";
+    setTimeout(() => (btn.textContent = "Install Now"), 3000);
+  });
+  </script>
+</body>
+</html>

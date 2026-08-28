@@ -1,0 +1,12 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/install", "destination": "/install.html" }
+  ],
+  "functions": {
+    "index.js": {
+      "includeFiles": "{index.html,install.html,app.txt,name.txt,admin/**,uploads/**}"
+    }
+  }
+}

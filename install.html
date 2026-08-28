@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <title>Install · GitHub setup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--blue:#2563eb;--muted:#64748b;--line:#e2e8f0;--ok:#059669;--danger:#dc2626}
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100dvh;font-family:Inter,system-ui,sans-serif;color:#0f172a;
+      background:#020617;display:grid;place-items:center;
+      padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+      -webkit-text-size-adjust:100%;
+    }
+    .card{
+      width:min(520px,100%);background:rgba(255,255,255,.95);
+      border-radius:20px;padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+    @media (max-width:480px){
+      .card{padding:22px 18px;border-radius:16px}
+      h1{font-size:20px}
+      input{height:46px;font-size:16px}
+    }
+    h1{margin:0 0 6px;font-size:22px}
+    p{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.5}
+    label{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#475569;margin:0 0 8px}
+    input{
+      width:100%;height:48px;padding:0 14px;margin-bottom:14px;border:1px solid var(--line);
+      border-radius:12px;font:inherit;font-size:14px;outline:none;
+    }
+    input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+    .btn{
+      width:100%;height:48px;border:0;border-radius:12px;cursor:pointer;font:inherit;font-weight:600;
+      background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;
+    }
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .btn-ghost{
+      width:100%;height:44px;margin-top:8px;border:1px solid var(--line);border-radius:12px;
+      background:#fff;color:#334155;font:inherit;font-weight:600;cursor:pointer;
+    }
+    .msg{min-height:18px;margin-top:10px;font-size:13px;font-weight:600;text-align:center}
+    .ok{color:var(--ok)}.err{color:var(--danger)}
+    .hidden{display:none !important}
+    .links{display:flex;gap:10px;justify-content:center;margin-top:14px}
+    .links a{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none}
+    .steps{display:flex;gap:8px;margin-bottom:20px}
+    .dot{flex:1;height:4px;border-radius:99px;background:#e2e8f0}
+    .dot.on{background:var(--blue)}
+    .status-box{
+      margin:12px 0;padding:12px 14px;border-radius:12px;background:#f8fafc;
+      border:1px solid var(--line);font-size:13px;line-height:1.6;color:#334155;
+    }
+    .status-box li{margin:4px 0;list-style:none;padding-left:18px;position:relative}
+    .status-box li::before{content:"";position:absolute;left:0;top:6px;width:8px;height:8px;border-radius:50%;background:#cbd5e1}
+    .status-box li.good::before{background:var(--ok)}
+    .status-box li.bad::before{background:var(--danger)}
+    .hint{font-size:12px;color:var(--muted);margin:-8px 0 14px;line-height:1.5}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="steps">
+      <div class="dot on" id="d1"></div>
+      <div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div>
+    </div>
+
+    <div id="stepPass">
+      <h1>Step 1 · Admin</h1>
+      <p>Enter your admin password to start GitHub setup.</p>
+      <label>Admin password</label>
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="btn" id="nextBtn" type="button">Continue</button>
+      <div class="msg" id="passMsg"></div>
+    </div>
+
+    <div id="stepToken" class="hidden">
+      <h1>Step 2 · GitHub token</h1>
+      <p>Paste a GitHub token with <b>repo</b> scope. We verify access to your Vercel site repo, then create a <b>public APK host repo</b> automatically.</p>
+      <label>Admin password</label>
+      <input id="password2" type="password" placeholder="Same as step 1" autocomplete="current-password">
+      <label>GitHub token</label>
+      <input id="token" type="password" placeholder="ghp_..." autocomplete="off">
+      <p class="hint">Classic token → enable <b>repo</b> scope. Fine-grained token must allow repository creation and read/write on your repos.</p>
+      <button class="btn" id="openGitBtn" type="button" style="margin-bottom:8px;background:#0f172a">Open GitHub token page</button>
+      <button class="btn" id="verifyBtn" type="button">Verify token</button>
+      <div class="status-box hidden" id="verifyBox"></div>
+      <button class="btn hidden" id="setupBtn" type="button" style="margin-top:8px">Create APK host &amp; finish</button>
+      <button class="btn-ghost" id="backBtn" type="button">Back</button>
+      <div class="msg" id="tokenMsg"></div>
+    </div>
+
+    <div id="stepDone" class="hidden">
+      <h1>All done</h1>
+      <p>GitHub setup completed successfully.</p>
+      <div class="status-box" id="doneBox"></div>
+      <button class="btn" id="adminBtn" type="button">Go to admin panel</button>
+    </div>
+
+    <div class="links">
+      <a href="/admin">Admin</a>
+      <a href="/">Website</a>
+    </div>
+  </div>
+
+  <script>
+    const TOKEN_URL = "https://github.com/settings/tokens/new?scopes=repo&description=app-download-admin";
+    const store = {
+      get(k) { return localStorage.getItem(k) || sessionStorage.getItem(k) || ""; },
+      set(k, v) { localStorage.setItem(k, v); sessionStorage.setItem(k, v); }
+    };
+    let verifyData = null;
+
+    function setStep(n) {
+      document.getElementById("stepPass").classList.toggle("hidden", n !== 1);
+      document.getElementById("stepToken").classList.toggle("hidden", n !== 2);
+      document.getElementById("stepDone").classList.toggle("hidden", n !== 3);
+      ["d1", "d2", "d3"].forEach((id, i) => {
+        document.getElementById(id).classList.toggle("on", i < n);
+      });
+    }
+
+    function adminPassword() {
+      return (
+        document.getElementById("password2").value.trim() ||
+        document.getElementById("password").value.trim() ||
+        store.get("admin_pw") ||
+        ""
+      );
+    }
+
+    async function api(body) {
+      const noStored = ["github-verify", "github-setup", "github-connect"].includes(body.action);
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...(noStored ? {} : { githubToken: store.get("gh_token") }),
+          ...body
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      return data;
+    }
+
+    async function checkConnected() {
+      try {
+        const data = await api({ action: "public-github-check" });
+        if (data.connected) location.replace("/admin");
+      } catch (_) {}
+    }
+    checkConnected();
+
+    document.getElementById("nextBtn").onclick = async () => {
+      const passMsg = document.getElementById("passMsg");
+      passMsg.className = "msg";
+      passMsg.textContent = "";
+      const pw = document.getElementById("password").value.trim();
+      if (!pw) {
+        passMsg.className = "msg err";
+        passMsg.textContent = "Password required";
+        return;
+      }
+      try {
+        await api({ action: "login", password: pw });
+        store.set("admin_pw", pw);
+        document.getElementById("password2").value = pw;
+        setStep(2);
+      } catch (e) {
+        passMsg.className = "msg err";
+        passMsg.textContent = e.message;
+      }
+    };
+
+    document.getElementById("password").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("nextBtn").click();
+    });
+
+    document.getElementById("openGitBtn").onclick = () => {
+      window.open(TOKEN_URL, "_blank", "noopener");
+    };
+
+    function renderVerify(data) {
+      const box = document.getElementById("verifyBox");
+      box.classList.remove("hidden");
+      const siteLine = data.siteRepo
+        ? '<li class="' + (data.siteRepoOk ? "good" : "bad") + '">Site repo: <b>' + data.siteRepo + "</b> " + (data.siteRepoOk ? "✓" : "✗ no access") + "</li>"
+        : "<li class=\"good\">Site repo: auto-detected on Vercel</li>";
+      box.innerHTML =
+        "<ul style=\"margin:0;padding:0\">" +
+        "<li class=\"good\">GitHub user: <b>@" + data.user + "</b></li>" +
+        siteLine +
+        "<li class=\"good\">APK host repo: <b>" + data.apkRepo + "</b> " + (data.apkExists ? "(exists)" : "(will create)") + "</li>" +
+        "</ul>";
+      document.getElementById("setupBtn").classList.toggle("hidden", !data.siteRepoOk && data.siteRepo);
+    }
+
+    document.getElementById("verifyBtn").onclick = async () => {
+      const tokenMsg = document.getElementById("tokenMsg");
+      tokenMsg.className = "msg";
+      tokenMsg.textContent = "Verifying...";
+      verifyData = null;
+      document.getElementById("setupBtn").classList.add("hidden");
+      try {
+        const pw = adminPassword();
+        const token = document.getElementById("token").value.trim();
+        if (!pw) throw new Error("Admin password required");
+        if (!token) throw new Error("GitHub token required");
+        verifyData = await api({ action: "github-verify", password: pw, token });
+        renderVerify(verifyData);
+        tokenMsg.className = "msg ok";
+        tokenMsg.textContent = verifyData.siteRepoOk || !verifyData.siteRepo
+          ? "Token verified. Click create APK host to finish."
+          : "Token valid but cannot access site repo. Check repo scope.";
+        if (verifyData.siteRepoOk || !verifyData.siteRepo) {
+          document.getElementById("setupBtn").classList.remove("hidden");
+        }
+      } catch (e) {
+        document.getElementById("verifyBox").classList.add("hidden");
+        tokenMsg.className = "msg err";
+        tokenMsg.textContent = e.message;
+      }
+    };
+
+    document.getElementById("setupBtn").onclick = async () => {
+      const tokenMsg = document.getElementById("tokenMsg");
+      const setupBtn = document.getElementById("setupBtn");
+      tokenMsg.className = "msg";
+      tokenMsg.textContent = "Creating APK host repo...";
+      setupBtn.disabled = true;
+      try {
+        const pw = adminPassword();
+        const token = document.getElementById("token").value.trim();
+        const data = await api({ action: "github-setup", password: pw, token });
+        store.set("admin_pw", pw);
+        store.set("gh_token", token);
+        store.set("gh_repo", data.apkRepo);
+        document.getElementById("doneBox").innerHTML =
+          "<ul style=\"margin:0;padding:0\">" +
+          "<li class=\"good\">Connected as <b>@" + data.user + "</b></li>" +
+          (data.siteRepo ? "<li class=\"good\">Site repo: <b>" + data.siteRepo + "</b></li>" : "") +
+          "<li class=\"good\">APK host: <b>" + data.apkRepo + "</b> " + (data.created ? "(created)" : "(ready)") + "</li>" +
+          "</ul>";
+        setStep(3);
+        tokenMsg.textContent = "";
+      } catch (e) {
+        tokenMsg.className = "msg err";
+        tokenMsg.textContent = e.message;
+      } finally {
+        setupBtn.disabled = false;
+      }
+    };
+
+    document.getElementById("backBtn").onclick = () => {
+      setStep(1);
+      document.getElementById("verifyBox").classList.add("hidden");
+      document.getElementById("setupBtn").classList.add("hidden");
+    };
+
+    document.getElementById("adminBtn").onclick = () => {
+      location.replace("/admin");
+    };
+  </script>
+</body>
+</html>
